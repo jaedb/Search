@@ -22,11 +22,11 @@ class SearchPageController extends PageController {
 	public function index($request){
 		
 		if (Director::isLive()){
-			Requirements::css('/resources/jaedb/search/client/Search.min.css');
-			Requirements::javascript('/resources/jaedb/search/client/Search.min.js');
+			Requirements::css('/resources/plasticstudio/search/client/Search.min.css');
+			Requirements::javascript('/resources/plasticstudio/search/client/Search.min.js');
 		} else {
-			Requirements::css('/resources/jaedb/search/client/Search.css');
-			Requirements::javascript('/resources/jaedb/search/client/Search.js');
+			Requirements::css('/resources/plasticstudio/search/client/Search.css');
+			Requirements::javascript('/resources/plasticstudio/search/client/Search.js');
 		}
 		
 		// get the parameters and variables of this request (ie the query and filters)
@@ -327,7 +327,7 @@ class SearchPageController extends PageController {
 							$tables_to_check[] = $type['Table'];
 
 							foreach ($tables_to_check as $table_to_check){
-								$column_exists_query = DB::query( "SHOW COLUMNS FROM \"".$table_to_check."\" LIKE '".$filter['Column']."'" );				
+								$column_exists_query = DB::query( "SHOW COLUMNS FROM \"".$table_to_check."\" LIKE '".$filter['Column']."'" );
 
 								foreach ($column_exists_query as $column){
 									$table_with_column = $table_to_check;
@@ -426,9 +426,8 @@ class SearchPageController extends PageController {
 
 								$filter_join = $filter['JoinTables'][$type['Key']];
 
-								$joins.= "LEFT JOIN \"".$filter_join['Table']."\" ON \"".$type['Table']."\".\"ID\" = \"".$filter_join['Column']."\"";
 								$joins.= "LEFT JOIN \"".$filter_join['Table']."\" ON \"".$type['Table']."\".\"ID\" = \"".$filter_join['Table']."\".\"".$filter_join['Column']."\"";
-							
+		
 								if (is_array($filter['Value'])){
 									$ids = '';
 									foreach ($filter['Value'] as $id){
@@ -463,7 +462,7 @@ class SearchPageController extends PageController {
 			$sql.= $where;
 
 			// Debugging
-			//echo '<h3 style="position: relative; padding: 20px; background: #EEEEEE; z-index: 999;">'.$sql.'</h3>';
+			//echo '<h3 style="position: relative; padding: 20px; background: #EEEEEE; z-index: 999;">'.str_replace('"', '`', $sql).'</h3>';
 
 			// Eexecutioner enter stage left
 			$results = DB::query($sql);
@@ -486,14 +485,18 @@ class SearchPageController extends PageController {
 		}
 		
 		// Apply sorting
-		$sort = self::get_mapped_sort()['Sort'];		
-		$sort = str_replace("'", "\'", $sort);
-		$sort = str_replace('"', '\"', $sort);
-		$sort = str_replace('`', '\`', $sort);
+		if(isset(self::get_mapped_sort()['Sort'])){
+			$sort = self::get_mapped_sort()['Sort'];		
+			$sort = str_replace("'", "\'", $sort);
+			$sort = str_replace('"', '\"', $sort);
+			$sort = str_replace('`', '\`', $sort);
+		}else{
+			$sort = 'Title ASC';
+		}
 		$allResults = $allResults->Sort($sort);
 
 		// Remove duplicates
-		//$allResults->removeDuplicates('ID');
+		$allResults->removeDuplicates('ID');
 		
 		// load into a paginated list. To change the items per page, set via the template (ie Results.setPageLength(20))
 		$paginatedItems = PaginatedList::create($allResults, $this->request);
