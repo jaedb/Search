@@ -44,7 +44,7 @@ Name: search
 Before:
     - '#site'
 ---
-Jaedb\Search\SearchPageController:
+PlasticStudio\Search\SearchPageController:
   types:
     docs:
       Label: 'Documents'

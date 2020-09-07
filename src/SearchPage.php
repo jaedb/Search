@@ -1,6 +1,6 @@
 <?php
 
-namespace Jaedb\Search;
+namespace PlasticStudio\Search;
 
 use Page;
 
