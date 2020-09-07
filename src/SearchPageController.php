@@ -427,6 +427,7 @@ class SearchPageController extends PageController {
 								$filter_join = $filter['JoinTables'][$type['Key']];
 
 								$joins.= "LEFT JOIN \"".$filter_join['Table']."\" ON \"".$type['Table']."\".\"ID\" = \"".$filter_join['Column']."\"";
+								$joins.= "LEFT JOIN \"".$filter_join['Table']."\" ON \"".$type['Table']."\".\"ID\" = \"".$filter_join['Table']."\".\"".$filter_join['Column']."\"";
 							
 								if (is_array($filter['Value'])){
 									$ids = '';
@@ -440,6 +441,9 @@ class SearchPageController extends PageController {
 									$ids = $filter['Value'];
 								}
 
+								if ($relations_sql !== ''){
+									$relations_sql.= " AND ";
+								}
 								$relations_sql.= "\"".$filter_join['Table']."\".\"".$filter['Table']."ID\" IN (". $ids .")";
 							}
 
