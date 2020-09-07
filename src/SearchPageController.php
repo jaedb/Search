@@ -1,6 +1,6 @@
 <?php  
 
-namespace Jaedb\Search;
+namespace PlasticStudio\Search;
 
 use PageController;
 use SilverStripe\ORM\ArrayList;
@@ -59,7 +59,7 @@ class SearchPageController extends PageController {
 	 **/
 
 	public static function get_types_available(){
-		$types = Config::inst()->get('Jaedb\Search\SearchPageController', 'types');
+		$types = Config::inst()->get('PlasticStudio\Search\SearchPageController', 'types');
 		$array = [];
 
 		if ($types){
@@ -73,7 +73,7 @@ class SearchPageController extends PageController {
 	}
 
 	public static function get_filters_available(){
-		$filters = Config::inst()->get('Jaedb\Search\SearchPageController', 'filters');
+		$filters = Config::inst()->get('PlasticStudio\Search\SearchPageController', 'filters');
 		$array = [];
 
 		if ($filters){
@@ -87,7 +87,7 @@ class SearchPageController extends PageController {
 	}
 
 	public static function get_sorts_available(){
-		$sorts = Config::inst()->get('Jaedb\Search\SearchPageController', 'sorts');
+		$sorts = Config::inst()->get('PlasticStudio\Search\SearchPageController', 'sorts');
 		$array = [];
 
 		if ($sorts){
