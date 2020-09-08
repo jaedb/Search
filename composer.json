@@ -1,15 +1,20 @@
 {
 	"name": "plasticstudio/search",
     "type": "silverstripe-vendormodule",
-	"description": "SilverStripe search engine",
+	"description": "Search engine for Silverstripe websites - forked from jaedb/search",
 	"homepage": "https://psdigital.co.nz",
-	"keywords": ["silverstripe"],
+	"keywords": ["silverstripe","silverstripesearch"],
 	"license": "BSD-3-Clause",
 	"authors": [
 		{
 			"name": "James Barnsley",
-			"homepage": "http://jamesbarnsley.co.nz",
+			"homepage": "https://jamesbarnsley.co.nz",
 			"email": "james@barnsley.co.nz"
+		},
+		{
+			"name": "Jeremy Cole",
+			"homepage": "https://psdigital.co.nz",
+			"email": "jeremy@psdigital.co.nz"
 		}
 	],
 	"support": {
