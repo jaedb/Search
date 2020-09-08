@@ -10,8 +10,8 @@ The built-in SilverStripe search form is a very simple search engine. This plugi
 # Usage
 
 * Create a `SearchPage` instance (typically at the root of your website). This page only is used to display results, so please refrain from creating multiple instances.
-* Configure your website's `_config/config.yml` to define search parameters.
-* Run `dev/build` to instansiate your new configuration
+* Configure your website's `_config/config.yml` (or add `_config/search.yml`) to define search parameters.
+* Run `dev/build` to instansiate your new configuration.
 
 
 # Configuration
@@ -23,15 +23,15 @@ The built-in SilverStripe search form is a very simple search engine. This plugi
   * `Filters`: a list of filters to apply pre-search (maps to `DataList->Filter(key => value)`)
   * `Columns`: columns to search for query string matches (format `Table.Column`)
 * `filters`: associative list of filter options
-  * `Structure`: defines the filter's relational structure (must be one of `db`, `has_one` or `has_many`)
+  * `Structure`: defines the filter's relational structure (must be one of `db`, `has_one` or `many_many`)
   * `Label`: front-end field label
   * `Table`: relational subject's table
   * `Column`: column to filter on
-  * `Operator`: SQL filter operator (ie `>`, `=`)
+  * `Operator`: SQL filter operator (ie `>`, `<`, `=`)
   * `JoinTables`: associative list of relationship mappings (use the `key` from the `types` array)
     * `Table`: relational join table
     * `Column`: column to join by
- * `sorts`: associative list of sort options
+ * `sorts`: associative list of sort options (if `sorts` are not defined, results will be sorted by default to `Title ASC`)
    * `Label`: front-end field label
    * `Sort`: SQL sort string
 
@@ -53,6 +53,7 @@ PlasticStudio\Search\SearchPageController:
       ClassNameShort: 'File'
       Filters:
         File_Live.ShowInSearch: '1'
+        File_Live.ClassName:  '''Silverstripe\\Assets\\File''' # You need to TRIPLE-ESCAPE in order to pass this as a string to the query
       Columns: ['File_Live.Title','File_Live.Description','File_Live.Name']
     pages:
       Label: 'Pages'
@@ -86,6 +87,15 @@ PlasticStudio\Search\SearchPageController:
         pages: 
           Table: 'Page_Tags'
           Column: 'PageID'
+      authors:
+        Structure: 'many_many'
+        Label: 'Authors'
+        ClassName: 'Member'
+        Table: 'Member'
+        JoinTables:
+          pages: 
+            Table: 'Page_Authors'
+            Column: 'PageID'
   sorts:
     title_asc:
       Label: 'Title (A-Z)'
