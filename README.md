@@ -34,6 +34,7 @@ The built-in SilverStripe search form is a very simple search engine. This plugi
  * `sorts`: associative list of sort options (if `sorts` are not defined, results will be sorted by default to `Title ASC`)
    * `Label`: front-end field label
    * `Sort`: SQL sort string
+* `defaults`: Default attributes or settings, as opposed to those submitted through the search form (currently only configured to use `sort`).
 
 
 # Example configuration
@@ -109,4 +110,6 @@ PlasticStudio\Search\SearchPageController:
     published_desc:
       Label: 'Publish date (oldest first)'
       Sort: 'DatePublished ASC'
+  defaults:
+    sort: 'Title ASC'
 ```
