@@ -17,6 +17,7 @@ class SearchPageController extends PageController {
 	private static $types;
 	private static $filters;
 	private static $sort;
+	private static $defaults;
 	private static $results;
 	
 	public function index($request){
@@ -99,6 +100,19 @@ class SearchPageController extends PageController {
 
 		return $array;
 	}
+
+	public static function get_defaults_available(){
+		$defaults = Config::inst()->get('PlasticStudio\Search\SearchPageController', 'defaults');
+		$array = [];
+
+		if ($defaults){
+			foreach ($defaults as $key => $value){
+				$array[$key] = $value;
+			}
+		}
+
+		return $array;
+	}
 	
 	public static function get_types(){
 		return self::$types;
@@ -163,6 +177,10 @@ class SearchPageController extends PageController {
 		return self::$sort;
 	}
 	
+	public static function set_sort($sort){
+		self::$sort = $sort;
+	}
+	
 	public static function get_mapped_sort(){
 		$sorts_available = self::get_sorts_available();
 		$sort = self::get_sort();
@@ -175,8 +193,24 @@ class SearchPageController extends PageController {
 		}
 	}
 	
-	public static function set_sort($sort){
-		self::$sort = $sort;
+	public static function get_defaults(){
+		return self::$defaults;
+	}
+	
+	public static function set_defaults($defaults){
+		self::$defaults = $defaults;
+	}
+	
+	public static function get_mapped_defaults(){
+		$defaults_available = self::get_defaults_available();
+		$defaults = self::get_defaults();
+
+		// If no sort, assume the first item
+		if (!$defaults){
+			return reset($defaults_available);
+		} else {
+			return $defaults_available[$defaults];
+		}
 	}
 	
 	public static function get_results(){
@@ -401,18 +435,20 @@ class SearchPageController extends PageController {
 							// join the relationship table to our record(s)
 							$joins.= "LEFT JOIN \"".$filter['Table']."\" ON \"".$filter['Table']."\".\"ID\" = \"".$table_with_column."\".\"".$filter['Column']."\"";
 							
-							if (is_array($filter['Value'])){
-								$ids = '';
-								foreach ($filter['Value'] as $id){
-									if ($ids != ''){
-										$ids.= ',';
+							if(!empty($filter['Value'])){
+								if (is_array($filter['Value'])){
+									$ids = '';
+									foreach ($filter['Value'] as $id){
+										if ($ids != ''){
+											$ids.= ',';
+										}
+										$ids.= "'".$id."'";
 									}
-									$ids.= "'".$id."'";
+								} else {
+									$ids = $filter['Value'];
 								}
-							} else {
-								$ids = $filter['Value'];
+								$where.= ' AND ('."\"".$table_with_column."\".\"".$filter['Column']."\" IN (". $ids .")".')';
 							}
-							$where.= ' AND ('."\"".$table_with_column."\".\"".$filter['Column']."\" IN (". $ids .")".')';
 
 							break;
 						
@@ -427,23 +463,25 @@ class SearchPageController extends PageController {
 								$filter_join = $filter['JoinTables'][$type['Key']];
 
 								$joins.= "LEFT JOIN \"".$filter_join['Table']."\" ON \"".$type['Table']."\".\"ID\" = \"".$filter_join['Table']."\".\"".$filter_join['Column']."\"";
-		
-								if (is_array($filter['Value'])){
-									$ids = '';
-									foreach ($filter['Value'] as $id){
-										if ($ids != ''){
-											$ids.= ',';
+								
+								if(!empty($filter['Value'])){
+									if (is_array($filter['Value'])){
+										$ids = '';
+										foreach ($filter['Value'] as $id){
+											if ($ids != ''){
+												$ids.= ',';
+											}
+											$ids.= "'".$id."'";
 										}
-										$ids.= "'".$id."'";
+									} else {
+										$ids = $filter['Value'];
 									}
-								} else {
-									$ids = $filter['Value'];
-								}
 
-								if ($relations_sql !== ''){
-									$relations_sql.= " AND ";
+									if ($relations_sql !== ''){
+										$relations_sql.= " AND ";
+									}
+									$relations_sql.= "\"".$filter_join['Table']."\".\"".$filter['Table']."ID\" IN (". $ids .")";
 								}
-								$relations_sql.= "\"".$filter_join['Table']."\".\"".$filter['Table']."ID\" IN (". $ids .")";
 							}
 
 							break;
@@ -483,17 +521,22 @@ class SearchPageController extends PageController {
 				$allResults->merge($resultObjects);
 			}
 		}
-		
-		// Apply sorting
+
+		$sort = false;
+		// Sorting applied throug form submission
 		if(isset(self::get_mapped_sort()['Sort'])){
 			$sort = self::get_mapped_sort()['Sort'];		
 			$sort = str_replace("'", "\'", $sort);
 			$sort = str_replace('"', '\"', $sort);
 			$sort = str_replace('`', '\`', $sort);
-		}else{
-			$sort = 'Title ASC';
 		}
-		$allResults = $allResults->Sort($sort);
+		// Default sort defined in config
+		elseif(isset(self::get_mapped_defaults()['sort'])){
+			$sort = self::get_mapped_defaults()['sort'];
+		}
+		if($sort){
+			$allResults = $allResults->Sort($sort);
+		}
 
 		// Remove duplicates
 		$allResults->removeDuplicates('ID');
