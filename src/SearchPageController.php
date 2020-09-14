@@ -202,15 +202,7 @@ class SearchPageController extends PageController {
 	}
 	
 	public static function get_mapped_defaults(){
-		$defaults_available = self::get_defaults_available();
-		$defaults = self::get_defaults();
-
-		// If no sort, assume the first item
-		if (!$defaults){
-			return reset($defaults_available);
-		} else {
-			return $defaults_available[$defaults];
-		}
+		return self::get_defaults_available();
 	}
 	
 	public static function get_results(){
