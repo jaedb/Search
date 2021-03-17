@@ -6,7 +6,7 @@ Before:
 SilverStripe\Control\Controller:
   extensions:
     - PlasticStudio\Search\SearchControllerExtension
-PlasticStudio\Search\SearchPageController:
+# PlasticStudio\Search\SearchPageController:
   # types:
   #   docs:
   #     Label: 'Documents'
