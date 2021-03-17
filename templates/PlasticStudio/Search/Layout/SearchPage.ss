@@ -1,4 +1,3 @@
-
 <div class="search-results-page">
 
 	$AdvancedSearchForm

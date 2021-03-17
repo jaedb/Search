@@ -3,6 +3,7 @@
 namespace PlasticStudio\Search;
 
 use Page;
+use SilverStripe\ORM\DB;
 
 class SearchPage extends Page {
 	private static $description = "Search engine and results page. You only need one of these page types.";

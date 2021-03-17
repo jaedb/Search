@@ -23,11 +23,11 @@ class SearchPageController extends PageController {
 	public function index($request){
 		
 		if (Director::isLive()){
-			Requirements::css('/resources/plasticstudio/search/client/Search.min.css');
-			Requirements::javascript('/resources/plasticstudio/search/client/Search.min.js');
+			Requirements::css('plasticstudio/search:client/Search.min.css');
+			Requirements::javascript('plasticstudio/search:client/Search.min.js');
 		} else {
-			Requirements::css('/resources/plasticstudio/search/client/Search.css');
-			Requirements::javascript('/resources/plasticstudio/search/client/Search.js');
+			Requirements::css('plasticstudio/search:client/Search.css');
+			Requirements::javascript('plasticstudio/search:client/Search.js');
 		}
 		
 		// get the parameters and variables of this request (ie the query and filters)
