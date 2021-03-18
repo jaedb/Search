@@ -532,6 +532,11 @@ class SearchPageController extends PageController {
 
 		// Remove duplicates
 		$allResults->removeDuplicates('ID');
+
+		// filter by permission
+		if($allResults) foreach($allResults as $result) {
+			if(!$result->canView()) $allResults->remove($result);
+		}
 		
 		// load into a paginated list. To change the items per page, set via the template (ie Results.setPageLength(20))
 		$paginatedItems = PaginatedList::create($allResults, $this->request);
