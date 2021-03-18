@@ -11,7 +11,8 @@ The built-in SilverStripe search form is a very simple search engine. This plugi
 
 * Create a `SearchPage` instance (typically at the root of your website). This page only is used to display results, so please refrain from creating multiple instances.
 * Configure your website's `_config/config.yml` (or add `_config/search.yml`) to define search parameters.
-* Run `dev/build` to instansiate your new configuration.
+* Run `dev/build` to instansiate your new configuration (this will also automatically create an instance of `SearchPage` if one does not exist).
+* To overwrite the default `SearchPage` tmeplate, add a template file to your application: `templates/PlasticStudio/Search/Layout/SearchPage.ss`
 
 
 # Configuration
