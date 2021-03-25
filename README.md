@@ -36,6 +36,7 @@ The built-in SilverStripe search form is a very simple search engine. This plugi
    * `Label`: front-end field label
    * `Sort`: SQL sort string
 * `defaults`: Default attributes or settings, as opposed to those submitted through the search form (currently only configured to use `sort`).
+* `submit_button_text`: Text to use on search form submit button (defaults to "Search")
 
 
 # Example configuration
@@ -113,4 +114,5 @@ PlasticStudio\Search\SearchPageController:
       Sort: 'DatePublished ASC'
   defaults:
     sort: 'Title ASC'
+  submit_button_text: 'Go'
 ```

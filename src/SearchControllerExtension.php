@@ -13,6 +13,7 @@ use SilverStripe\Forms\ListboxField;
 use SilverStripe\Forms\DropdownField;
 use SilverStripe\Forms\HiddenField;
 use SilverStripe\View\Requirements;
+use SilverStripe\Core\Config\Config;
 
 class SearchControllerExtension extends DataExtension {
 	
@@ -36,8 +37,12 @@ class SearchControllerExtension extends DataExtension {
 		$fields->push( TextField::create('query','',SearchPageController::get_query())->addExtraClass('query')->setAttribute('placeholder', 'Keywords') );
 		
 		// create the form actions (we only need a submit button)
+		$submit_button_text = 'Search';
+		if (Config::inst()->get('PlasticStudio\Search\SearchPageController', 'submit_button_text')) {
+			$submit_button_text = Config::inst()->get('PlasticStudio\Search\SearchPageController', 'submit_button_text');
+		}
         $actions = FieldList::create(
-            FormAction::create("doSearchForm")->setTitle("Search")
+            FormAction::create("doSearchForm")->setTitle($submit_button_text)
         );
 		
 		// now build the actual form object
@@ -169,8 +174,12 @@ class SearchControllerExtension extends DataExtension {
 		}
 		
 		// create the form actions (we only need a submit button)
+		$submit_button_text = 'Search';
+		if (Config::inst()->get('PlasticStudio\Search\SearchPageController', 'submit_button_text')) {
+			$submit_button_text = Config::inst()->get('PlasticStudio\Search\SearchPageController', 'submit_button_text');
+		}
         $actions = FieldList::create(
-            FormAction::create("doSearchForm")->setTitle("Search")
+            FormAction::create("doSearchForm")->setTitle($submit_button_text)
         );
 		
 		// now build the actual form object
