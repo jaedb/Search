@@ -32,11 +32,12 @@ The built-in SilverStripe search form is a very simple search engine. This plugi
   * `JoinTables`: associative list of relationship mappings (use the `key` from the `types` array)
     * `Table`: relational join table
     * `Column`: column to join by
- * `sorts`: associative list of sort options (if `sorts` are not defined, results will be sorted by default to `Title ASC`)
+ * `sorts`: associative list of sort options. These are used to popoulate a "Sort by" dropdown field in the Advanced Search Form. Sort order of search results will default to the top item in this list.
    * `Label`: front-end field label
    * `Sort`: SQL sort string
-* `defaults`: Default attributes or settings, as opposed to those submitted through the search form (currently only configured to use `sort`).
 * `submit_button_text`: Text to use on search form submit button (defaults to "Search")
+
+TODO: `defaults`: Default attributes or settings, as opposed to those submitted through the search form.
 
 
 # Example configuration
@@ -112,7 +113,8 @@ PlasticStudio\Search\SearchPageController:
     published_desc:
       Label: 'Publish date (oldest first)'
       Sort: 'DatePublished ASC'
-  defaults:
-    sort: 'Title ASC'
   submit_button_text: 'Go'
+  ## TODO:
+  ## defaults:
+    ## sort: 'Title ASC'
 ```
