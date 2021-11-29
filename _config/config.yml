@@ -5,8 +5,8 @@ Before:
 ---
 SilverStripe\Control\Controller:
   extensions:
-    - Jaedb\Search\SearchControllerExtension
-Jaedb\Search\SearchPageController:
+    - PlasticStudio\Search\SearchControllerExtension
+# PlasticStudio\Search\SearchPageController:
   # types:
   #   docs:
   #     Label: 'Documents'

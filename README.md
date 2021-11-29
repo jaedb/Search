@@ -10,8 +10,9 @@ The built-in SilverStripe search form is a very simple search engine. This plugi
 # Usage
 
 * Create a `SearchPage` instance (typically at the root of your website). This page only is used to display results, so please refrain from creating multiple instances.
-* Configure your website's `_config/config.yml` to define search parameters.
-* Run `dev/build` to instansiate your new configuration
+* Configure your website's `_config/config.yml` (or add `_config/search.yml`) to define search parameters.
+* Run `dev/build` to instansiate your new configuration (this will also automatically create an instance of `SearchPage` if one does not exist).
+* To overwrite the default `SearchPage` tmeplate, add a template file to your application: `templates/PlasticStudio/Search/Layout/SearchPage.ss`
 
 
 # Configuration
@@ -23,17 +24,20 @@ The built-in SilverStripe search form is a very simple search engine. This plugi
   * `Filters`: a list of filters to apply pre-search (maps to `DataList->Filter(key => value)`)
   * `Columns`: columns to search for query string matches (format `Table.Column`)
 * `filters`: associative list of filter options
-  * `Structure`: defines the filter's relational structure (must be one of `db`, `has_one` or `has_many`)
+  * `Structure`: defines the filter's relational structure (must be one of `db`, `has_one` or `many_many`)
   * `Label`: front-end field label
   * `Table`: relational subject's table
   * `Column`: column to filter on
-  * `Operator`: SQL filter operator (ie `>`, `=`)
+  * `Operator`: SQL filter operator (ie `>`, `<`, `=`)
   * `JoinTables`: associative list of relationship mappings (use the `key` from the `types` array)
     * `Table`: relational join table
     * `Column`: column to join by
- * `sorts`: associative list of sort options
+ * `sorts`: associative list of sort options. These are used to popoulate a "Sort by" dropdown field in the Advanced Search Form. Sort order of search results will default to the top item in this list.
    * `Label`: front-end field label
    * `Sort`: SQL sort string
+* `submit_button_text`: Text to use on search form submit button (defaults to "Search")
+
+TODO: `defaults`: Default attributes or settings, as opposed to those submitted through the search form.
 
 
 # Example configuration
@@ -44,7 +48,7 @@ Name: search
 Before:
     - '#site'
 ---
-Jaedb\Search\SearchPageController:
+PlasticStudio\Search\SearchPageController:
   types:
     docs:
       Label: 'Documents'
@@ -53,6 +57,7 @@ Jaedb\Search\SearchPageController:
       ClassNameShort: 'File'
       Filters:
         File_Live.ShowInSearch: '1'
+        File_Live.ClassName:  '''Silverstripe\\Assets\\File''' # You need to TRIPLE-ESCAPE in order to pass this as a string to the query
       Columns: ['File_Live.Title','File_Live.Description','File_Live.Name']
     pages:
       Label: 'Pages'
@@ -86,6 +91,15 @@ Jaedb\Search\SearchPageController:
         pages: 
           Table: 'Page_Tags'
           Column: 'PageID'
+      authors:
+        Structure: 'many_many'
+        Label: 'Authors'
+        ClassName: 'Member'
+        Table: 'Member'
+        JoinTables:
+          pages: 
+            Table: 'Page_Authors'
+            Column: 'PageID'
   sorts:
     title_asc:
       Label: 'Title (A-Z)'
@@ -99,4 +113,8 @@ Jaedb\Search\SearchPageController:
     published_desc:
       Label: 'Publish date (oldest first)'
       Sort: 'DatePublished ASC'
+  submit_button_text: 'Go'
+  ## TODO:
+  ## defaults:
+    ## sort: 'Title ASC'
 ```

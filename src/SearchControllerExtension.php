@@ -1,6 +1,6 @@
 <?php
 
-namespace Jaedb\Search;
+namespace PlasticStudio\Search;
 
 use Exception;
 use SilverStripe\ORM\DataExtension;
@@ -13,6 +13,7 @@ use SilverStripe\Forms\ListboxField;
 use SilverStripe\Forms\DropdownField;
 use SilverStripe\Forms\HiddenField;
 use SilverStripe\View\Requirements;
+use SilverStripe\Core\Config\Config;
 
 class SearchControllerExtension extends DataExtension {
 	
@@ -32,12 +33,19 @@ class SearchControllerExtension extends DataExtension {
 		// create our search form fields
         $fields = FieldList::create();
 		
-		// search keywords
-		$fields->push( TextField::create('query','',SearchPageController::get_query())->addExtraClass('query')->setAttribute('placeholder', 'Keywords') );
+		$placeholder_text = 'Keywords';
+		if (Config::inst()->get('PlasticStudio\Search\SearchPageController', 'search_form_placeholder_text')) {
+			$placeholder_text = Config::inst()->get('PlasticStudio\Search\SearchPageController', 'search_form_placeholder_text');
+		}
+		$fields->push( TextField::create('query','',SearchPageController::get_query())->addExtraClass('query')->setAttribute('placeholder', $placeholder_text) );
 		
 		// create the form actions (we only need a submit button)
+		$submit_button_text = 'Search';
+		if (Config::inst()->get('PlasticStudio\Search\SearchPageController', 'submit_button_text')) {
+			$submit_button_text = Config::inst()->get('PlasticStudio\Search\SearchPageController', 'submit_button_text');
+		}
         $actions = FieldList::create(
-            FormAction::create("doSearchForm")->setTitle("Search")
+            FormAction::create("doSearchForm")->setTitle($submit_button_text)
         );
 		
 		// now build the actual form object
@@ -147,7 +155,7 @@ class SearchControllerExtension extends DataExtension {
 							$source = $source->filter($filter['Filters']);
 						}
 
-						$fields->push(ListboxField::create($key, $filter['Label'], $source->map('ID','Title','All'), explode(',',$value))->addExtraClass('chosen-select'));
+						$fields->push(CheckboxSetField::create($key, $filter['Label'], $source->map('ID','Title','All'), explode(',',$value))->addExtraClass('chosen-select'));
 
 						break;
 				}
@@ -169,8 +177,12 @@ class SearchControllerExtension extends DataExtension {
 		}
 		
 		// create the form actions (we only need a submit button)
+		$submit_button_text = 'Search';
+		if (Config::inst()->get('PlasticStudio\Search\SearchPageController', 'submit_button_text')) {
+			$submit_button_text = Config::inst()->get('PlasticStudio\Search\SearchPageController', 'submit_button_text');
+		}
         $actions = FieldList::create(
-            FormAction::create("doSearchForm")->setTitle("Search")
+            FormAction::create("doSearchForm")->setTitle($submit_button_text)
         );
 		
 		// now build the actual form object

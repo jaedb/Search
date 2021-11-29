@@ -1,6 +1,6 @@
 <?php  
 
-namespace Jaedb\Search;
+namespace PlasticStudio\Search;
 
 use PageController;
 use SilverStripe\ORM\ArrayList;
@@ -17,16 +17,17 @@ class SearchPageController extends PageController {
 	private static $types;
 	private static $filters;
 	private static $sort;
+	private static $defaults;
 	private static $results;
 	
 	public function index($request){
 		
 		if (Director::isLive()){
-			Requirements::css('/resources/jaedb/search/client/Search.min.css');
-			Requirements::javascript('/resources/jaedb/search/client/Search.min.js');
+			Requirements::css('plasticstudio/search:client/Search.min.css');
+			Requirements::javascript('plasticstudio/search:client/Search.min.js');
 		} else {
-			Requirements::css('/resources/jaedb/search/client/Search.css');
-			Requirements::javascript('/resources/jaedb/search/client/Search.js');
+			Requirements::css('plasticstudio/search:client/Search.css');
+			Requirements::javascript('plasticstudio/search:client/Search.js');
 		}
 		
 		// get the parameters and variables of this request (ie the query and filters)
@@ -59,7 +60,7 @@ class SearchPageController extends PageController {
 	 **/
 
 	public static function get_types_available(){
-		$types = Config::inst()->get('Jaedb\Search\SearchPageController', 'types');
+		$types = Config::inst()->get('PlasticStudio\Search\SearchPageController', 'types');
 		$array = [];
 
 		if ($types){
@@ -73,7 +74,7 @@ class SearchPageController extends PageController {
 	}
 
 	public static function get_filters_available(){
-		$filters = Config::inst()->get('Jaedb\Search\SearchPageController', 'filters');
+		$filters = Config::inst()->get('PlasticStudio\Search\SearchPageController', 'filters');
 		$array = [];
 
 		if ($filters){
@@ -87,12 +88,25 @@ class SearchPageController extends PageController {
 	}
 
 	public static function get_sorts_available(){
-		$sorts = Config::inst()->get('Jaedb\Search\SearchPageController', 'sorts');
+		$sorts = Config::inst()->get('PlasticStudio\Search\SearchPageController', 'sorts');
 		$array = [];
 
 		if ($sorts){
 			foreach ($sorts as $key => $value){
 				$value['Key'] = $key;
+				$array[$key] = $value;
+			}
+		}
+
+		return $array;
+	}
+
+	public static function get_defaults_available(){
+		$defaults = Config::inst()->get('PlasticStudio\Search\SearchPageController', 'defaults');
+		$array = [];
+
+		if ($defaults){
+			foreach ($defaults as $key => $value){
 				$array[$key] = $value;
 			}
 		}
@@ -163,6 +177,10 @@ class SearchPageController extends PageController {
 		return self::$sort;
 	}
 	
+	public static function set_sort($sort){
+		self::$sort = $sort;
+	}
+	
 	public static function get_mapped_sort(){
 		$sorts_available = self::get_sorts_available();
 		$sort = self::get_sort();
@@ -175,8 +193,16 @@ class SearchPageController extends PageController {
 		}
 	}
 	
-	public static function set_sort($sort){
-		self::$sort = $sort;
+	public static function get_defaults(){
+		return self::$defaults;
+	}
+	
+	public static function set_defaults($defaults){
+		self::$defaults = $defaults;
+	}
+	
+	public static function get_mapped_defaults(){
+		return self::get_defaults_available();
 	}
 	
 	public static function get_results(){
@@ -327,7 +353,7 @@ class SearchPageController extends PageController {
 							$tables_to_check[] = $type['Table'];
 
 							foreach ($tables_to_check as $table_to_check){
-								$column_exists_query = DB::query( "SHOW COLUMNS FROM \"".$table_to_check."\" LIKE '".$filter['Column']."'" );				
+								$column_exists_query = DB::query( "SHOW COLUMNS FROM \"".$table_to_check."\" LIKE '".$filter['Column']."'" );
 
 								foreach ($column_exists_query as $column){
 									$table_with_column = $table_to_check;
@@ -401,18 +427,20 @@ class SearchPageController extends PageController {
 							// join the relationship table to our record(s)
 							$joins.= "LEFT JOIN \"".$filter['Table']."\" ON \"".$filter['Table']."\".\"ID\" = \"".$table_with_column."\".\"".$filter['Column']."\"";
 							
-							if (is_array($filter['Value'])){
-								$ids = '';
-								foreach ($filter['Value'] as $id){
-									if ($ids != ''){
-										$ids.= ',';
+							if(!empty($filter['Value'])){
+								if (is_array($filter['Value'])){
+									$ids = '';
+									foreach ($filter['Value'] as $id){
+										if ($ids != ''){
+											$ids.= ',';
+										}
+										$ids.= "'".$id."'";
 									}
-									$ids.= "'".$id."'";
+								} else {
+									$ids = $filter['Value'];
 								}
-							} else {
-								$ids = $filter['Value'];
+								$where.= ' AND ('."\"".$table_with_column."\".\"".$filter['Column']."\" IN (". $ids .")".')';
 							}
-							$where.= ' AND ('."\"".$table_with_column."\".\"".$filter['Column']."\" IN (". $ids .")".')';
 
 							break;
 						
@@ -426,21 +454,26 @@ class SearchPageController extends PageController {
 
 								$filter_join = $filter['JoinTables'][$type['Key']];
 
-								$joins.= "LEFT JOIN \"".$filter_join['Table']."\" ON \"".$type['Table']."\".\"ID\" = \"".$filter_join['Column']."\"";
-							
-								if (is_array($filter['Value'])){
-									$ids = '';
-									foreach ($filter['Value'] as $id){
-										if ($ids != ''){
-											$ids.= ',';
+								$joins.= "LEFT JOIN \"".$filter_join['Table']."\" ON \"".$type['Table']."\".\"ID\" = \"".$filter_join['Table']."\".\"".$filter_join['Column']."\"";
+								
+								if(!empty($filter['Value'])){
+									if (is_array($filter['Value'])){
+										$ids = '';
+										foreach ($filter['Value'] as $id){
+											if ($ids != ''){
+												$ids.= ',';
+											}
+											$ids.= "'".$id."'";
 										}
-										$ids.= "'".$id."'";
+									} else {
+										$ids = $filter['Value'];
 									}
-								} else {
-									$ids = $filter['Value'];
-								}
 
-								$relations_sql.= "\"".$filter_join['Table']."\".\"".$filter['Table']."ID\" IN (". $ids .")";
+									if ($relations_sql !== ''){
+										$relations_sql.= " AND ";
+									}
+									$relations_sql.= "\"".$filter_join['Table']."\".\"".$filter['Table']."ID\" IN (". $ids .")";
+								}
 							}
 
 							break;
@@ -459,7 +492,7 @@ class SearchPageController extends PageController {
 			$sql.= $where;
 
 			// Debugging
-			//echo '<h3 style="position: relative; padding: 20px; background: #EEEEEE; z-index: 999;">'.$sql.'</h3>';
+			//echo '<h3 style="position: relative; padding: 20px; background: #EEEEEE; z-index: 999;">'.str_replace('"', '`', $sql).'</h3>';
 
 			// Eexecutioner enter stage left
 			$results = DB::query($sql);
@@ -480,16 +513,30 @@ class SearchPageController extends PageController {
 				$allResults->merge($resultObjects);
 			}
 		}
-		
-		// Apply sorting
-		$sort = self::get_mapped_sort()['Sort'];		
-		$sort = str_replace("'", "\'", $sort);
-		$sort = str_replace('"', '\"', $sort);
-		$sort = str_replace('`', '\`', $sort);
-		$allResults = $allResults->Sort($sort);
+
+		$sort = false;
+		// Sorting applied throug form submission
+		if(isset(self::get_mapped_sort()['Sort'])){
+			$sort = self::get_mapped_sort()['Sort'];		
+			$sort = str_replace("'", "\'", $sort);
+			$sort = str_replace('"', '\"', $sort);
+			$sort = str_replace('`', '\`', $sort);
+		}
+		// Default sort defined in config
+		elseif(isset(self::get_mapped_defaults()['sort'])){
+			$sort = self::get_mapped_defaults()['sort'];
+		}
+		if($sort){
+			$allResults = $allResults->Sort($sort);
+		}
 
 		// Remove duplicates
-		//$allResults->removeDuplicates('ID');
+		$allResults->removeDuplicates('ID');
+
+		// filter by permission
+		if($allResults) foreach($allResults as $result) {
+			if(!$result->canView()) $allResults->remove($result);
+		}
 		
 		// load into a paginated list. To change the items per page, set via the template (ie Results.setPageLength(20))
 		$paginatedItems = PaginatedList::create($allResults, $this->request);
