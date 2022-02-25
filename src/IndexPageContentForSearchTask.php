@@ -18,7 +18,7 @@ class IndexPageContentForSearchTask extends BuildTask
     {
 
         // Select all sitetree items without search content
-        $items = SiteTree::get()->filter(['ElementalSearchContent' => NULL])->limit(5);
+        $items = SiteTree::get()->filter(['ElementalSearchContent' => NULL])->limit(100);
 
         //**********************************************************************************
         // TODO REMOVE LIMIT WHEN READY FOR LIVE

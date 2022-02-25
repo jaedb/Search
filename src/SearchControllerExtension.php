@@ -44,18 +44,21 @@ class SearchControllerExtension extends DataExtension {
 		if (Config::inst()->get('PlasticStudio\Search\SearchPageController', 'submit_button_text')) {
 			$submit_button_text = Config::inst()->get('PlasticStudio\Search\SearchPageController', 'submit_button_text');
 		}
-        $actions = FieldList::create(
-            FormAction::create("doSearchForm")->setTitle($submit_button_text)
-        );
+        // $actions = FieldList::create(
+        //     FormAction::create("doSearchForm")->setTitle($submit_button_text)
+        // );
 		
 		// now build the actual form object
         $form = Form::create(
 			$controller = $this->owner,
 			$name = 'SearchForm', 
 			$fields = $fields,
-			$actions = $actions
+			// $actions = $actions
 		)->addExtraClass('search-form')
 		->disableSecurityToken();
+
+		$page = SearchPage::get()->first();
+		$form->setFormAction($page->Link());
 		
         return $form;
 	}
