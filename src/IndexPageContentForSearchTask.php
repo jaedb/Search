@@ -10,9 +10,9 @@ use SilverStripe\ORM\Queries\SQLUpdate;
 
 class IndexPageContentForSearchTask extends BuildTask
 {
-    protected $title = 'Collate Page Content Task';
+    protected $title = 'Index Page Content for Search';
  
-    protected $description = 'Collate Page Content Task';
+    protected $description = 'Collate all page content from elements and save to a field for search.';
  
     public function run($request)
     {
