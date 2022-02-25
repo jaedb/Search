@@ -44,6 +44,7 @@ class SearchControllerExtension extends DataExtension {
 		if (Config::inst()->get('PlasticStudio\Search\SearchPageController', 'submit_button_text')) {
 			$submit_button_text = Config::inst()->get('PlasticStudio\Search\SearchPageController', 'submit_button_text');
 		}
+		// don't do action here, set below for 404 error page fix
         // $actions = FieldList::create(
         //     FormAction::create("doSearchForm")->setTitle($submit_button_text)
         // );
