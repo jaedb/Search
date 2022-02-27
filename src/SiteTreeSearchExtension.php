@@ -8,6 +8,8 @@ use SilverStripe\Forms\FieldList;
 use SilverStripe\Forms\TextField;
 use SilverStripe\ORM\DataExtension;
 use SilverStripe\View\SSViewer;
+use SilverStripe\Versioned\Versioned;
+use SilverStripe\ORM\Queries\SQLUpdate;
 
 class SiteTreeSearchExtension extends DataExtension
 {
@@ -30,7 +32,7 @@ class SiteTreeSearchExtension extends DataExtension
         parent::onBeforeWrite();
 
         //generate search content from elements and save to our search field
-        $this->owner->ElementalSearchContent = $this->collateSearchContent();
+        $this->collateSearchContent();
     }
 
     /**
@@ -38,13 +40,20 @@ class SiteTreeSearchExtension extends DataExtension
      */
     public function updateSearchContent(){
 
-        //if the page is page is published then make sure it stays published otherwise wrrite draft 
+        $content = $this->collateSearchContent();
+
+        $update = SQLUpdate::create();
+        $update->setTable('"SiteTree"');
+        $update->addWhere(['ID' => $this->owner->ID]);
+        $update->addAssignments([
+            '"ElementalSearchContent"' => $content
+        ]);
+        $update->execute();
+
         if($this->owner->isInDB() && !$this->owner->isOnDraft() && $this->owner->isPublished()){
-            $this->owner->write();
-            $this->owner->publishSingle();
-        }
-        else{
-            $this->owner->write();
+
+            $this->owner->copyVersionToStage(Versioned::DRAFT, Versioned::LIVE, true);
+            
         }
     }
 
