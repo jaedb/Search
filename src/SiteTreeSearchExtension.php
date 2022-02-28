@@ -50,10 +50,10 @@ class SiteTreeSearchExtension extends DataExtension
         ]);
         $update->execute();
 
-        if($this->owner->isInDB() && !$this->owner->isOnDraft() && $this->owner->isPublished()){
+        if($this->owner->isInDB() && $this->owner->isPublished()){
 
             $this->owner->copyVersionToStage(Versioned::DRAFT, Versioned::LIVE, true);
-            
+
         }
     }
 

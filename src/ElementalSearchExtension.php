@@ -20,4 +20,16 @@ class ElementalSearchExtension extends Extension
             $parent->updateSearchContent();
         }
     }
+
+    /**
+     * Force a re-index of the parent page on archive of element
+     * @param Versioned $original
+     */
+    public function onAfterDelete(&$original)
+    {
+        $parent = $this->getOwner()->getPage();
+        if ($parent && $parent->hasExtension(SiteTreeSearchExtension::class)) {
+            $parent->updateSearchContent();
+        }
+    }
 }
