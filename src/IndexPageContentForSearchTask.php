@@ -16,15 +16,28 @@ class IndexPageContentForSearchTask extends BuildTask
  
     public function run($request)
     {
+        $reindex = $request->getVar('reindex');
+        $offset = $request->getVar('offset');
+        $limit = $request->getVar('limit');
 
-        if($request->getVar('reindex') == 'true') {
+        if($reindex == 'true') {
             echo 'Running - reindex all...<br />';
             // select all sitetree items
             $items = SiteTree::get();
-        } else {
+
+        }
+        
+        if($offset && $limit) {
+            $items = SiteTree::get()->limit($limit, $offset);
+            echo 'Running - partial: ' . $offset . ' to ' . $limit . '...<br />';
+
+        }
+
+        if($request->getVars() == null) {
             // Select all sitetree items without search content
-            $items = SiteTree::get()->filter(['ElementalSearchContent' => NULL]);
+            $items = SiteTree::get()->filter(['ElementalSearchContent' => null]);
             echo 'Running - index where ElementalSearchContent is NULL...<br />';
+
         }
 
         if(!$items->count()) {
