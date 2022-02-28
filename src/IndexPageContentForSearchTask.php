@@ -69,7 +69,7 @@ class IndexPageContentForSearchTask extends BuildTask
                     $update->execute();
                 }
 
-                echo '<p>Page ' . $item->Title . ' indexed.</p>' . "/PHP_EOL";
+                echo '<p>Page ' . $item->Title . ' indexed.</p>' . PHP_EOL;
             }
         }
     }
