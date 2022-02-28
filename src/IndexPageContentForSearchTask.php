@@ -27,9 +27,15 @@ class IndexPageContentForSearchTask extends BuildTask
 
         }
         
-        if($offset && $limit) {
+        if($limit && !$offset) {
+            $items = SiteTree::get()->limit($limit);
+            echo 'Running - partial: limit to ' . $limit . '...<br />';
+
+        }
+        
+        if($limit && $offset) {
             $items = SiteTree::get()->limit($limit, $offset);
-            echo 'Running - partial: ' . $offset . ' to ' . $limit . '...<br />';
+            echo 'Running - partial: offset ' . $offset . ' limit ' . $limit . '...<br />';
 
         }
 
