@@ -17,10 +17,15 @@ class IndexPageContentForSearchTask extends BuildTask
     public function run($request)
     {
 
-        echo 'Running...<br />';
-
-        // Select all sitetree items without search content
-        $items = SiteTree::get()->filter(['ElementalSearchContent' => NULL]);
+        if($request->getVar('reindex') == 'true') {
+            echo 'Running - reindex all...<br />';
+            // select all sitetree items
+            $items = SiteTree::get();
+        } else {
+            // Select all sitetree items without search content
+            $items = SiteTree::get()->filter(['ElementalSearchContent' => NULL]);
+            echo 'Running - index where ElementalSearchContent is NULL...<br />';
+        }
 
         if(!$items->count()) {
             echo 'No items to update.<br />';
