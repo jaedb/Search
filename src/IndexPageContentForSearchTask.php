@@ -12,7 +12,7 @@ class IndexPageContentForSearchTask extends BuildTask
 {
     protected $title = 'Index Page Content for Search';
  
-    protected $description = 'Collate all page content from elements and save to a field for search.';
+    protected $description = 'Collate all page content from elements and save to a field for search. Add optional query string, "reindex=true" to reindex all pages.';
  
     public function run($request)
     {
