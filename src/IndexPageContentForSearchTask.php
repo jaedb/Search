@@ -20,27 +20,16 @@ class IndexPageContentForSearchTask extends BuildTask
         echo 'Running...<br />';
 
         // Select all sitetree items without search content
-        // $items = SiteTree::get()->filter(['ElementalSearchContent' => NULL]);
-        $items = SiteTree::get()->limit(100);
-
-        
-        //**********************************************************************************
-        // TODO REMOVE LIMIT WHEN READY FOR LIVE
-        //**********************************************************************************
-    
+        $items = SiteTree::get()->filter(['ElementalSearchContent' => NULL]);
 
         if(!$items->count()) {
             echo 'No items to update.<br />';
         } else {
 
             foreach ($items as $item) {
-                echo $item->Title . '<br />';
-                // Debug::show($item->Title);
-
+                
                 // get the page content as plain content string
                 $content = $this->collateSearchContent($item);
-
-                // Debug::show($content);
 
                 // Update this item in db
                 $update = SQLUpdate::create();
@@ -50,8 +39,6 @@ class IndexPageContentForSearchTask extends BuildTask
                     '"ElementalSearchContent"' => $content
                 ]);
                 $update->execute();
-
-                echo 'Published ' . $item->isPublished() . '<br />';
 
                 // IF page is published, update the live table
                 if ($item->isPublished()) {
@@ -64,7 +51,7 @@ class IndexPageContentForSearchTask extends BuildTask
                     $update->execute();
                 }
 
-                echo 'Save to live' . '<br />';
+                echo '<p>Page ' . $item->Title . ' indexed.</p>' . "/PHP_EOL";
             }
         }
     }
