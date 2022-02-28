@@ -17,42 +17,54 @@ class IndexPageContentForSearchTask extends BuildTask
     public function run($request)
     {
 
-        // Select all sitetree items without search content
-        $items = SiteTree::get()->filter(['ElementalSearchContent' => NULL])->limit(100);
+        echo 'Running...<br />';
 
+        // Select all sitetree items without search content
+        // $items = SiteTree::get()->filter(['ElementalSearchContent' => NULL]);
+        $items = SiteTree::get()->limit(100);
+
+        
         //**********************************************************************************
         // TODO REMOVE LIMIT WHEN READY FOR LIVE
         //**********************************************************************************
     
-        foreach($items as $item) {
 
-            // Debug::show($item->Title);
+        if(!$items->count()) {
+            echo 'No items to update.<br />';
+        } else {
 
-            // get the page content as plain content string
-            $content = $this->collateSearchContent($item);
+            foreach ($items as $item) {
+                echo $item->Title . '<br />';
+                // Debug::show($item->Title);
 
-            // Debug::show($content);
+                // get the page content as plain content string
+                $content = $this->collateSearchContent($item);
 
-            // Update this item in db
-            $update = SQLUpdate::create();
-            $update->setTable('"SiteTree"');
-            $update->addWhere(['ID' => $item->ID]);
-            $update->addAssignments([
-                '"ElementalSearchContent"' => $content
-            ]);
-            $update->execute();
+                // Debug::show($content);
 
-            // Debug::show($item->isPublished());
-
-            // IF page is published, update the live table
-            if ($item->isPublished()) {
+                // Update this item in db
                 $update = SQLUpdate::create();
-                $update->setTable('"SiteTree_Live"');
+                $update->setTable('"SiteTree"');
                 $update->addWhere(['ID' => $item->ID]);
                 $update->addAssignments([
                     '"ElementalSearchContent"' => $content
                 ]);
                 $update->execute();
+
+                echo 'Published ' . $item->isPublished() . '<br />';
+
+                // IF page is published, update the live table
+                if ($item->isPublished()) {
+                    $update = SQLUpdate::create();
+                    $update->setTable('"SiteTree_Live"');
+                    $update->addWhere(['ID' => $item->ID]);
+                    $update->addAssignments([
+                        '"ElementalSearchContent"' => $content
+                    ]);
+                    $update->execute();
+                }
+
+                echo 'Save to live' . '<br />';
             }
         }
     }
