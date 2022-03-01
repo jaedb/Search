@@ -20,31 +20,33 @@ class IndexPageContentForSearchTask extends BuildTask
         $offset = $request->getVar('offset');
         $limit = $request->getVar('limit');
 
-        if($reindex == 'true') {
-            echo 'Running - reindex all...<br />';
-            // select all sitetree items
-            $items = SiteTree::get();
+        // select all sitetree items
+        $items = SiteTree::get();
+        echo 'Running...<br />';
 
+        if($reindex != 'true') {            
+            $items->filter(['ElementalSearchContent' => null]);
+            echo 'Running - index where ElementalSearchContent is NULL...<br />';
         }
         
         if($limit && !$offset) {
-            $items = SiteTree::get()->limit($limit);
+            $items->limit($limit);
             echo 'Running - partial: limit to ' . $limit . '...<br />';
 
         }
         
         if($limit && $offset) {
-            $items = SiteTree::get()->limit($limit, $offset);
+            $items->limit($limit, $offset);
             echo 'Running - partial: offset ' . $offset . ' limit ' . $limit . '...<br />';
 
         }
 
-        if($request->getVars() == null) {
-            // Select all sitetree items without search content
-            $items = SiteTree::get()->filter(['ElementalSearchContent' => null]);
-            echo 'Running - index where ElementalSearchContent is NULL...<br />';
+        // if($request->getVars() == null) {
+        //     // Select all sitetree items without search content
+        //     $items = SiteTree::get()->filter(['ElementalSearchContent' => null]);
+            
 
-        }
+        // }
 
         if(!$items->count()) {
             echo 'No items to update.<br />';
