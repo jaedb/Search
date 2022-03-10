@@ -13,6 +13,7 @@ use SilverStripe\Forms\ListboxField;
 use SilverStripe\Forms\DropdownField;
 use SilverStripe\Forms\HiddenField;
 use SilverStripe\View\Requirements;
+use SilverStripe\Control\Controller;
 use SilverStripe\Core\Config\Config;
 
 class SearchControllerExtension extends DataExtension {
@@ -59,6 +60,21 @@ class SearchControllerExtension extends DataExtension {
 		->disableSecurityToken();
 
 		$page = SearchPage::get()->first();
+
+		$link = Controller::join_links(
+			$page->Link(),
+			SearchPageController::get_query()
+
+
+			// $school->URLSegment,
+			// $aoi->URLSegment,
+			// $this->URLSegment,
+			// '/'                
+		);
+
+		echo $link;
+		die();
+
 		$form->setFormAction($page->Link());
 		
         return $form;
