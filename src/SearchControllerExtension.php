@@ -56,7 +56,7 @@ class SearchControllerExtension extends DataExtension {
 			$controller = $this->owner,
 			$name = 'SearchForm', 
 			$fields = $fields,
-			// $actions = $actions
+			$actions = $actions
 		)->addExtraClass('search-form')
 		->disableSecurityToken();
 
