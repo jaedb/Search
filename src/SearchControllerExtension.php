@@ -46,9 +46,10 @@ class SearchControllerExtension extends DataExtension {
 			$submit_button_text = Config::inst()->get('PlasticStudio\Search\SearchPageController', 'submit_button_text');
 		}
 		// don't do action here, set below for 404 error page fix
-        // $actions = FieldList::create(
-        //     FormAction::create("doSearchForm")->setTitle($submit_button_text)
-        // );
+		// fix breaks pagination, reinstating
+        $actions = FieldList::create(
+            FormAction::create("doSearchForm")->setTitle($submit_button_text)
+        );
 		
 		// now build the actual form object
         $form = Form::create(
@@ -59,23 +60,8 @@ class SearchControllerExtension extends DataExtension {
 		)->addExtraClass('search-form')
 		->disableSecurityToken();
 
-		$page = SearchPage::get()->first();
-
-		$link = Controller::join_links(
-			$page->Link(),
-			SearchPageController::get_query()
-
-
-			// $school->URLSegment,
-			// $aoi->URLSegment,
-			// $this->URLSegment,
-			// '/'                
-		);
-
-		echo $link;
-		die();
-
-		$form->setFormAction($page->Link());
+		// $page = SearchPage::get()->first();
+		// $form->setFormAction($page->Link());
 		
         return $form;
 	}
