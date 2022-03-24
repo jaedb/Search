@@ -13,6 +13,7 @@ use SilverStripe\Forms\ListboxField;
 use SilverStripe\Forms\DropdownField;
 use SilverStripe\Forms\HiddenField;
 use SilverStripe\View\Requirements;
+use SilverStripe\Control\Controller;
 use SilverStripe\Core\Config\Config;
 
 class SearchControllerExtension extends DataExtension {
@@ -44,6 +45,8 @@ class SearchControllerExtension extends DataExtension {
 		if (Config::inst()->get('PlasticStudio\Search\SearchPageController', 'submit_button_text')) {
 			$submit_button_text = Config::inst()->get('PlasticStudio\Search\SearchPageController', 'submit_button_text');
 		}
+		// don't do action here, set below for 404 error page fix
+		// fix breaks pagination, reinstating
         $actions = FieldList::create(
             FormAction::create("doSearchForm")->setTitle($submit_button_text)
         );
@@ -56,6 +59,9 @@ class SearchControllerExtension extends DataExtension {
 			$actions = $actions
 		)->addExtraClass('search-form')
 		->disableSecurityToken();
+
+		// $page = SearchPage::get()->first();
+		// $form->setFormAction($page->Link());
 		
         return $form;
 	}

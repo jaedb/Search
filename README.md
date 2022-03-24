@@ -15,6 +15,15 @@ The built-in SilverStripe search form is a very simple search engine. This plugi
 * To overwrite the default `SearchPage` tmeplate, add a template file to your application: `templates/PlasticStudio/Search/Layout/SearchPage.ss`
 
 
+# Elemental
+
+* Elemental search is included
+* On page or Element save, all content from all Elements is saved to a field called `ElementalSearchContent` on sitetree.
+* Simply include `'SiteTree_Live.ElementalSearchContent'` to the list of page columns
+* Currently there is no way to exclude individual elements from being included.
+* Run IndexPageContentForSearchTask to index element content
+
+
 # Configuration
 * `types`: associative list of types to search
   * `Label`: front-end field label
@@ -67,7 +76,7 @@ PlasticStudio\Search\SearchPageController:
       Filters: 
         SiteTree_Live.ShowInSearch: '1'
       JoinTables: ['SiteTree_Live']
-      Columns: ['SiteTree_Live.Title','SiteTree_Live.MenuTitle','SiteTree_Live.Content']
+      Columns: ['SiteTree_Live.Title','SiteTree_Live.MenuTitle','SiteTree_Live.Content', 'SiteTree_Live.ElementalSearchContent']
   filters:
     updated_before:
       Structure: 'db'
