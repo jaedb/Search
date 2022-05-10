@@ -15,10 +15,7 @@ class ElementalSearchExtension extends Extension
      */
     public function onAfterPublish(&$original)
     {
-        $parent = $this->getOwner()->getPage();
-        if ($parent && $parent->hasExtension(SiteTreeSearchExtension::class)) {
-            $parent->updateSearchContent();
-        }
+        $this->updateSearchContent();
     }
 
     /**
@@ -27,9 +24,23 @@ class ElementalSearchExtension extends Extension
      */
     public function onAfterDelete(&$original)
     {
+        $this->updateSearchContent();
+    }
+    /**
+     * Force a re-index of the parent page on un-publish of element
+     */
+    public function onAfterUnpublish()
+    {
+        $this->updateSearchContent();
+    }
+
+    public function updateSearchContent()
+    {
         $parent = $this->getOwner()->getPage();
-        if ($parent && $parent->hasExtension(SiteTreeSearchExtension::class)) {
-            $parent->updateSearchContent();
+        //Even though we have the parent page. Lets always get the "live" version. This is so when we update the search content we are not indexing draft/unpublished content
+        $liveParentPage = Versioned::get_by_stage($parent->ClassName, Versioned::LIVE)->byID($parent->ID);
+        if ($liveParentPage && $liveParentPage->hasExtension(SiteTreeSearchExtension::class)) {
+            $liveParentPage->updateSearchContent();
         }
     }
 }
