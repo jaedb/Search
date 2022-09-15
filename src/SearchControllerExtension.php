@@ -155,7 +155,12 @@ class SearchControllerExtension extends DataExtension {
 							$source = $source->filter($filter['Filters']);
 						}
 
-						$fields->push(CheckboxSetField::create($key, $filter['Label'], $source->map('ID','Title','All'), explode(',',$value))->addExtraClass('chosen-select'));
+						if ($value == null) {
+                            $default = '';
+                        } else {
+                            $default = explode(',', $value);
+                        }
+						$fields->push(CheckboxSetField::create($key, $filter['Label'], $source->map('ID','Title','All'), $default)->addExtraClass('chosen-select'));
 
 						break;
 				}
